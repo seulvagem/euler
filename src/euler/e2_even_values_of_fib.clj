@@ -1,4 +1,4 @@
-(ns e2-even-values-of-fib)
+(ns euler.e2-even-values-of-fib)
 
 (defn fib
   ([] (fib 1 1))

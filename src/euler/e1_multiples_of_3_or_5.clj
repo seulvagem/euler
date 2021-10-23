@@ -1,4 +1,4 @@
-(ns e1-multiples-of-3-or-5)
+(ns euler.e1-multiples-of-3-or-5)
 
 (defn -main
   []

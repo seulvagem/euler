@@ -1,4 +1,4 @@
-(ns e4-palindrome-numbers
+(ns euler.e4-palindrome-numbers
   (:require [clojure.string :as str]))
 
 (defn gen-products

@@ -1,4 +1,4 @@
-(ns e3-random.prime-factors
+(ns euler.e3-prime-factors
   (:require [clojure.math.numeric-tower :as m]
             [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]

@@ -1,4 +1,4 @@
-(ns e768-combinatorial-analysis)
+(ns euler.e768-combinatorial-analysis)
 
 ;; (def !
 ;;   "factorial"
