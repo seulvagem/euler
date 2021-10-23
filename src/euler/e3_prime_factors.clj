@@ -49,7 +49,7 @@
 (sdef-many s-factors-of 
            prime-factors-of factors-of factors-of' factors-of'' factors-of'w)
 
-(defn prime-factors-of ;; ~41µs, porém a primeira execução leva ms
+(defn factors-of' ;; ~41µs, porém a primeira execução leva ms
   [n]
   (loop [facs []
          n n
@@ -62,7 +62,7 @@
           (recur (conj facs p) (/ n p) primes)
           (recur facs n (rest primes)))))))
 
-(defn factors-of ;; ~117µs
+(defn factors-of'1 ;; ~117µs
   [n]
   (loop [facs []
          n n
@@ -74,7 +74,7 @@
           (recur (conj facs d) (/ n d) possible-factors)
           (recur facs n (rest possible-factors)))))))
 
-(defn factors-of' ;; ~35µs
+(defn factors-of'2 ;; ~35µs
   [n]
   (loop [facs []
          n n
@@ -88,7 +88,7 @@
             (recur (conj facs d) nd-quo nd-quo possible-factors)
             (recur facs n nd-quo (rest possible-factors))))))))
 
-(defn factors-of'' ;; ~24µs
+(defn factors-of ;; ~24µs
   [n]
   (loop [facs []
          n n
@@ -118,6 +118,6 @@
 
 (defn -main
  []
- (let [factors (factors-of'' input)]
+ (let [factors (factors-of input)]
    [(peek factors) factors]))
 
