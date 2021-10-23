@@ -12,10 +12,12 @@
 
 (defn -main
   []
-  (let [rang (range 2 (inc 20))
-        factors (map e3/factors-of'' rang)
-        factors-maps (map count-occurences factors)
-        factors-map (reduce (partial merge-with max) factors-maps)]
+  (let [divisors (range 2 (inc 20))
+        xf-factors-occurences (comp (map e3/factors-of)
+                                    (map count-occurences))
+        factors-map (transduce xf-factors-occurences
+                               (partial merge-with max)
+                               {} divisors)]
     (reduce (fn [acc, [n c]]
               (apply * acc (repeat c n)))
             1 factors-map)))
