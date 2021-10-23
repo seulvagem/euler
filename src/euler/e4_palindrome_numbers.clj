@@ -21,8 +21,11 @@
         re (re-pattern re-str)]
     (re-find-groups re s)))
 
-(def products (for [a (range 99 10 -1)
-                     b (range 99 (dec a) -1)]
+(def top 999)
+(def bottom 100)
+
+(def products (for [a (range top bottom -1)
+                     b (range top (dec a) -1)]
                  [(* a b) a b]))
 
 (defn reverse-second
@@ -33,10 +36,14 @@
   (comp (map str)
         (map ->halves)
         (map reverse-second)
-        (map #(apply = %))))
+        (map-indexed vector)
+        (filter #(apply = (second %)))))
 
-
-;; (defn -main
-;;   []
-  ;; (let [reverse-second ]
-;;     ))
+(defn -main
+  []
+  (let [xf (comp (map first)
+                 xf-palindrome?
+                 (map first)
+                 (map #(nth products %)))
+        palindromes (sequence xf products)]
+    (reduce (partial max-key first) palindromes)))
