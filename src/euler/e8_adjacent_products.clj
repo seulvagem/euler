@@ -1,6 +1,8 @@
 (ns euler.e8-adjacent-products
   (:require [euler.base :as b]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [clojure.spec.alpha :as s]
+            [clojure.spec.test.alpha :as stest]))
 
 (def input (str/replace "73167176531330624919225119674426574742355349194934
 96983520312774506326239578318016984801869478851843
@@ -46,6 +48,20 @@
                            (map #(map parse-int %))
                            (map #(reduce * %)))]
     (transduce xf-start->product max 0 starts)))
+
+;; queue solution
+
+(s/def ::state #{:growing :full})
+
+(s/def ::worm-state (s/keys :req-un [::max-product ::state ::queue ::product]))
+
+(defn product-worm
+  ([worm-state n])
+  ([worm-state])
+  ([]))
+
+(transduce (map #(parse-int %)) product-worm input)
+
 
 (defn -main'
   []
