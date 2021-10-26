@@ -35,9 +35,12 @@
   []
   (let [starts (range (- (count input) section-length))
         zero-c? #(= % \0) 
-        xf-start->product (comp (map #(drop % input))
-                                (map #(take section-length %))
-                                (filter #(not (some zero-c? %)))
-                                (map #(map parse-int %))
-                                (map #(reduce * %)))]
+        xf-start->product (comp
+                           (map #(subs input % (+ % section-length)))
+                           (map seq)
+                           ;;    (map #(drop % input))
+                           ;;    (map #(take section-length %))
+                           (filter #(not (some zero-c? %)))
+                           (map #(map parse-int %))
+                           (map #(reduce * %)))]
     (transduce xf-start->product max 0 starts)))
