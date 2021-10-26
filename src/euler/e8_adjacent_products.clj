@@ -24,23 +24,50 @@
 71636269561882670428252483600823257530420752963450"
                         #"\R" ""))
 
-(defn parse-int 
+(defn parse-int
   "char -> int"
   [c]
   (Character/digit c 10))
 
 (def section-length 13)
 
+(def numbers (sequence (map #(parse-int %)) input))
+
 (defn -main
   []
   (let [starts (range (- (count input) section-length))
-        zero-c? #(= % \0) 
+        zero-c? #(= % \0)
         xf-start->product (comp
                            (map #(subs input % (+ % section-length)))
                            (map seq)
-                           ;;    (map #(drop % input))
-                           ;;    (map #(take section-length %))
+                            ;;   (map #(drop % numbers))
+                            ;;   (map #(take section-length %))
                            (filter #(not (some zero-c? %)))
                            (map #(map parse-int %))
                            (map #(reduce * %)))]
     (transduce xf-start->product max 0 starts)))
+
+(defn -main'
+  []
+  (loop [max-prod 0
+         numbers numbers
+         q (b/queue)
+         c-prod 1]
+    (let [num (first numbers)
+          nnumbers (rest numbers)]
+      (if-not num
+        ;;   (do (println "end q:" q)
+        max-prod
+        (if (zero? num)
+            ;; (do (println "found zero q:" q "num:" num)
+          (recur max-prod nnumbers (b/queue) 1)
+          (let [nq (conj q num)
+                nprod (* c-prod num)]
+            (if (<= (count nq) section-length)
+                ;; (do (println "growing q:" nq "num: "num)
+              (recur max-prod nnumbers nq nprod)
+              (let [discarded-num (peek nq)
+                    prod (/ nprod discarded-num)
+                    nmax (max max-prod prod)]
+                ;;   (println "max size q:" nq "num:" num "disc-num:" discarded-num)
+                (recur nmax nnumbers (pop nq) prod)))))))))
