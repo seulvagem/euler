@@ -14,6 +14,7 @@
   (let [parse-fn (get-parse-fn (count num-str))]
     (parse-fn num-str)))
 
-
-
-;; QUEUE
+(def x-num->digit
+  "number to digit sequence transducer"
+  (comp (map str)
+        (mapcat seq)))
