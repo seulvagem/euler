@@ -1,7 +1,5 @@
 (ns euler.base)
 
-
-
 (defn get-parse-fn
   [length]
   (condp > length 
@@ -19,26 +17,36 @@
   (comp (map str)
         (mapcat seq)))
 
-(defn combinations-of-2
-  [coll]
-  (loop [acc '()
-         sequ coll]
-    (let [x (first sequ)
-          seq2 (next sequ)]
-      (if-not seq2
-        acc
-        (let [combs (map #(list x %) seq2)
-              nacc (into acc combs)]
-          (recur nacc seq2))))))
 
-(defn combinate
-  [f coll]
-  (loop [acc []
-         sequ (seq coll)]
-    (let [x (first sequ)
-          seq2 (next sequ)]
-      (if-not seq2
-        acc
-        (let [combs (map #(cons x %) (f seq2))
-              nacc (into acc combs)]
-          (recur nacc seq2))))))
+;; combinations
+
+(defn- combinations-of-1
+  "kinda stupid, but it keeps combinate DRY!"
+  [coll]
+  (map list coll))
+
+(defn- combinate
+  [f]
+  (fn [coll]
+    (loop [acc []
+           seq1 (seq coll)]
+      (let [x (first seq1)
+            seq2 (next seq1)]
+        (if-not seq2
+          acc
+          (let [nacc (into acc (map #(cons x %)) (f seq2))]
+            (recur nacc seq2)))))))
+
+(defn- get-combination-fn
+  [n]
+  (nth (iterate combinate combinations-of-1) (dec n)))
+
+(defn combinations-of
+  [n coll]
+  (let [c-fn (get-combination-fn n)]
+    (c-fn coll)))
+
+(defn combinations-up-to
+  [n coll]
+  (let [xf-combs-of (map #(combinations-of % coll))]
+    (transduce xf-combs-of concat (range 1 (inc n)))))

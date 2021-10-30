@@ -28,7 +28,7 @@
 (defn combinations
   [n s]
   (/ (! n)
-     (* (! s) (! (- n s)))))
+     (*' (! s) (! (- n s)))))
 
 (defn chandelier
   [h c]
