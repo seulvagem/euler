@@ -16,5 +16,5 @@
         xf (comp (map collatz)
                  (map #(inc (count %)))
                  (map-indexed vector))
-        [i length] (transduce xf (partial max-key second) [0 0] starts)]
-    (inc i)))
+        res-vec (transduce xf (partial max-key second) [0 0] starts)]
+    (update res-vec 0 inc)))
