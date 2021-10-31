@@ -50,3 +50,13 @@
   [n coll]
   (let [xf-combs-of (map #(combinations-of % coll))]
     (transduce xf-combs-of concat (range 1 (inc n)))))
+
+
+;; pass-value-through
+
+(defn use-i
+  ([f]
+   (use-i f 0))
+  ([f n]
+   (fn [arg-vec]
+     (update arg-vec n f))))
