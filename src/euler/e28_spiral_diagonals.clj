@@ -14,26 +14,53 @@
 ;; 0 +2 +2 +2 +2 +4 +4 +4 +4 +6 +6 +6 +6 +8 +8 +8 +8
 ;; 1x1   3x3   5x5   7x7
 
-(defn next-n
-  ([]
-   {:step 2 :n 1 :count 3})
-  ([{:keys [step count n] :as m}]
-     ;; lots of duplication
-   (let [n (+ n step)
-         step (if (zero? count)
-                (+ step 2)
-                step)
-         count (if (zero? count)
-                 3
-                 (dec count))]
-     {:n n, :step step, :count count})))
 
-;; should probably take this into transducer right?
-(def n-seq (iterate next-n (next-n)))
+(defn next-layer
+  [step n]
+  (let [xf (comp (map #(* % step))
+                 (map #(+ % n)))]
+    (into '() xf (range 1 5))))
+
+(defn rdcf-layering-sum
+  ([]
+   [1 1])
+  ([[sum n] step]
+   (let [layer (next-layer step n)
+         n (first layer)
+         sum (reduce + sum layer)]
+     [sum n]))
+  ([[sum]]
+   sum))
+
+(defn get-square-diagonals-sum
+  [square-size]
+  (let [steps (range 2 ##Inf 2)
+        max-layers (-> square-size dec (/ 2))
+        xf (take max-layers)]
+    (transduce xf rdcf-layering-sum steps)))
+
+
+(def square-size 1001)
 
 (defn -main
-  [square-size] ;; ugly xor caused by execution and checking order
-  (let [xf (comp (take-while #(not (and (> (% :step) square-size)
-                                        (< (% :count) 3))))
-                 (map :n))]
-    (transduce xf + n-seq)))
+  []
+  (get-square-diagonals-sum square-size))
+
+;; (defn next-layer'
+;;   ([]
+;;    ['(1) 2])
+;;   ([[last-layer step]]
+;;    (let [n (first last-layer)
+;;          xf (comp (map #(* % step))
+;;                   (map #(+ % n)))
+;;          layer (into '() xf (range 1 5))
+;;          n-step (+ step 2)]
+;;      [layer n-step])))
+
+;; (defn get-square-diagonals-sum'
+;;   [square-size]
+;;   (let [max-layers (-> square-size (/ 2))
+;;         layers (iterate next-layer' (next-layer'))
+;;         xf (comp (take max-layers)
+;;                  (mapcat first))]
+;;     (transduce xf + layers)))
