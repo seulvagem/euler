@@ -6,12 +6,11 @@
    (lazy-seq
     (cons a (fib b (+ a b))))))
 
-(def limit 4000000)
+(def limit 4e6)
 
 (defn -main
   []
   (let [fibs (drop 2 (fib))
-        xf-even-fibs (take-nth 3)
-        xf-lim (take-while #(<= % limit))
-        xf (comp xf-even-fibs xf-lim)]
+        xf (comp (take-nth 3)
+                 (take-while #(<= % limit)))]
     (transduce xf + fibs)))

@@ -98,7 +98,7 @@
   [worm n]
   (-> worm
       (update :queue conj n)
-      (update :product * n)))
+      (update :product *' n)))
 
 (defn eat
   "ingest and ponder if it's enough already"
@@ -106,7 +106,7 @@
   (let [n-worm (ingest worm n)
         worm-size (count (:queue n-worm))]
     (assoc n-worm
-           :full? (>= worm-size section-length))))
+           :full? (>= worm-size (:max-size worm)))))
 
 (defn dispose
   "gets rid of waste number"
@@ -137,8 +137,13 @@
 (defn siesta
   "takes a moment after eating to reflect...
    and calculate the max product of course!"
-  [{product :product,, :as worm}]
-  (update worm :max-product max product))
+  [{product :product, max-prod :max-product,, :as worm}]
+  ;; (update worm :max-product max product)
+  (if (> product max-prod)
+    (assoc worm
+           :max-product product
+           :max-worm (:queue worm))
+    worm))
 
 (defn product-worm
   "does everything a product-worm should, ingest numbers up to it's max size
@@ -151,12 +156,20 @@
          (siesta worm)
          worm))))
   ([worm]
-   (:max-product worm))
+   [(:max-product worm) (:max-worm worm)])
   ([]
    {:full? false
     :queue (q/ueue)
     :product 1
-    :max-product 0}))
+    :max-product 0
+    :max-size section-length}))
+
+(defn get-product-worm
+  "returns a product worm that starts with the specified max-size"
+  [max-size]
+  (fn
+    ([] (assoc (product-worm) :max-size max-size))
+    ([& args] (apply product-worm args))))
 
 (defn -main
   []

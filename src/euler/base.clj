@@ -4,6 +4,13 @@
             [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]))
 
+(defn find-linear
+  [pred coll]
+  (let [pred-ret (fn [x]
+               (when (pred x)
+                 x))]
+    (some pred-ret coll)))
+
 (defn get-parse-fn
   [length]
   (condp > length 
@@ -23,8 +30,6 @@
 
 
 ;; combinations
-
-(s/def)
 
 (defn- combinations-of-1
   "kinda stupid, but it keeps combinate DRY!"
