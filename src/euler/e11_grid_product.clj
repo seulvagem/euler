@@ -25,11 +25,11 @@
 20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54
 01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48")
 
-;; x0 y0 , 0 + , + +
-;; x1 y0 , + 0 , + +
+;; x0->xmax-sec y0->ymax-sec , 0 + , + +
+;; x1->xmax-sec y0->ymax-sec , + 0 , + +
 
-;; xmax ymax , 0 - , - -
-;; xmax-1 ymax , - 0 , - -
+;; xmax->x+sec ymax->y+sec , 0 - , - -
+;; xmax-1->x+sec ymax->y+sec , - 0 , - -
 
 (defn input->int-matrix
   [input-str]
@@ -43,28 +43,32 @@
   ([mtx x y]
    (get-in mtx [y x] 0))) ;; return 0 if not found so I can concatenate all kinds of lines interleaved with invalid coords for worm reset
 
-(defn next-diag-coord
-  [coord]
-  (mapv inc coord))
-
-(defn get-diag-coords
-  [length start]
-  (let [closest (apply max start)
-        limit (- length closest)]
-    (eduction (take limit) (iterate next-diag-coord start))))
-
 (defn get-rows
   [mtx]
   (eduction (interpose [0]) cat mtx))
 
+(defn next-diag-coord
+  [op coord]
+  (mapv op coord))
+
+(defn get-diag-coords
+  [length op start]
+  (let [closest (apply max start)
+        limit (- length closest)]
+    (eduction (take limit) (iterate (partial next-diag-coord op) start))))
+
+(defn- get-y-range
+  [range-dir length section-size]
+  (apply range (range-dir [0  (- length section-size)])))
+
 (defn get-diagonals-coords
-  [length section-size]
-  (let [diag-starts-down (for [y (range 0 (inc (- length section-size)))]
-                           [0 y])
-        diag-starts-right (for [x (range 1 (inc (- length section-size)))]
-                            [x 0])
-        diag-starts (concat diag-starts-down diag-starts-right)
-        diags-coords (eduction (map #(get-diag-coords length %)) diag-starts)]
+  [length section-size [op dim-range dim-fix]]
+  (let [diag-starts-vert (for [y dim-range]
+                           [dim-fix y])
+        diag-starts-horz (for [x (drop 1 dim-range)]
+                            [x dim-fix])
+        diag-starts (concat diag-starts-vert diag-starts-horz)
+        diags-coords (eduction (map #(get-diag-coords length op %)) diag-starts)]
     (eduction (interpose '([-1 -1])) cat
               diags-coords)))
 
@@ -81,10 +85,13 @@
         xf-coord->num (map #(get-num mtx %))
         rows (get-rows mtx)
         columns (eduction xf-coord->num (get-columns-coords length))
-        diags (eduction xf-coord->num (get-diagonals-coords length section-size))]
+        diags-down (eduction xf-coord->num (get-diagonals-coords length section-size 
+                                                            [inc (range 0 (inc (- length section-size))) 0]))
+        diags-up (eduction xf-coord->num (get-diagonals-coords length section-size
+                                                                 [dec (range (dec length) (+ section-size -2) -1) (dec length)]))]
     (transduce (comp (interpose [0]) cat)
                (e8/get-product-worm section-size)
-               [rows columns diags])))
+               [rows columns diags-down diags-up])))
 
 (defn -main
   []
