@@ -24,8 +24,6 @@
 
 ;; combinations
 
-(s/def)
-
 (defn- combinations-of-1
   "kinda stupid, but it keeps combinate DRY!"
   [coll]
@@ -73,16 +71,16 @@
         divs (into #{} xf combs)]
     (conj divs 1)))
 
-(defn rd->factors-map
-  [acc f]
-  (update acc f #(if %
-                   (inc %)
-                   1)))
+(defn coll->occurrences-map
+  [coll]
+  (reduce (fn [acc x]
+            (update acc x (fnil inc 0)))
+          {} coll))
 
 (defn divisors-count
   [n]
   (let [factors (p/factors-of n)
-        factors-map (reduce rd->factors-map {} factors)
+        factors-map (coll->occurrences-map factors)
         xf (comp (map #(% 1))
                  (map inc))]
     (transduce xf * (seq factors-map))))

@@ -1,23 +1,18 @@
 (ns euler.e5-smallest-multiple
-  (:require [euler.e3-prime-factors :as e3]))
+  (:require [euler.e3-prime-factors :as e3]
+            [euler.base :as b]))
 
-
-(defn count-occurences
-  [coll]
-  (reduce (fn [acc x]
-            (update acc x #(if %
-                             (inc %)
-                             1)))
-          {} coll))
+(def lim 20)
 
 (defn -main
   []
-  (let [divisors (range 2 (inc 20))
+  (let [divisors (range 2 (inc lim))
         xf-factors-occurences (comp (map e3/factors-of)
-                                    (map count-occurences))
+                                    (map b/coll->occurrences-map))
         factors-map (transduce xf-factors-occurences
                                (partial merge-with max)
                                {} divisors)]
+    (println factors-map)
     (reduce (fn [acc, [n c]]
-              (apply * acc (repeat c n)))
+              (reduce * acc (repeat c n)))
             1 factors-map)))
