@@ -36,14 +36,14 @@
 
 (def numbers (sequence (map #(parse-int %)) input))
 
-(defn -main'1
-  []
-  (let [starts (range (- (count input) section-length))
-        xf-start->product (comp (map #(drop % numbers))
-                                (map #(take section-length %))
-                                (filter #(not (some zero? %)))
-                                (map #(reduce * %)))]
-    (transduce xf-start->product max 0 starts)))
+;; (defn -main'1
+;;   []
+;;   (let [starts (range (- (count input) section-length))
+;;         xf-start->product (comp (map #(drop % numbers))
+;;                                 (map #(take section-length %))
+;;                                 (filter #(not (some zero? %)))
+;;                                 (map #(reduce * %)))]
+;;     (transduce xf-start->product max 0 starts)))
 
 ;; queue solution
 
@@ -51,32 +51,32 @@
   [reducing-fn]
   (transduce (map #(parse-int %)) reducing-fn input))
 
-(defn prod-queue
-  ([{:keys [max-prod queue prod] :as acc}, num]
-   (if (zero? num)
-     (assoc acc :queue (q/ueue), :prod 1)
-     (let [nq (conj queue num)
-           nprod (* prod num)
-           q-size (count nq)]
-       (if (<= q-size section-length)
-         (let [acc (assoc acc :queue nq, :prod nprod)]
-           (if (= q-size section-length)
-             (assoc acc :max-prod (max max-prod nprod))
-             acc))
-         (let [discarded-num (peek nq)
-               prod (/ nprod discarded-num)
-               nmax (max max-prod prod)]
-           (assoc acc :max-prod nmax, :queue (pop nq), :prod prod))))))
-  ([{max :max-prod}]
-   max)
-  ([]
-   {:max-prod 0
-    :queue (q/ueue)
-    :prod 1}))
+;; (defn prod-queue
+;;   ([{:keys [max-prod queue prod] :as acc}, num]
+;;    (if (zero? num)
+;;      (assoc acc :queue (q/ueue), :prod 1)
+;;      (let [nq (conj queue num)
+;;            nprod (* prod num)
+;;            q-size (count nq)]
+;;        (if (<= q-size section-length)
+;;          (let [acc (assoc acc :queue nq, :prod nprod)]
+;;            (if (= q-size section-length)
+;;              (assoc acc :max-prod (max max-prod nprod))
+;;              acc))
+;;          (let [discarded-num (peek nq)
+;;                prod (/ nprod discarded-num)
+;;                nmax (max max-prod prod)]
+;;            (assoc acc :max-prod nmax, :queue (pop nq), :prod prod))))))
+;;   ([{max :max-prod}]
+;;    max)
+;;   ([]
+;;    {:max-prod 0
+;;     :queue (q/ueue)
+;;     :prod 1}))
 
-(defn -main'2
-  []
-  (transduce-numbers prod-queue))
+;; (defn -main'2
+;;   []
+;;   (transduce-numbers prod-queue))
 
 
 
